@@ -16,6 +16,7 @@ class Customer extends Model
         'customer_name',
         'phone',
         'address',
+        'is_member',
     ];
 
     public function orders(): HasMany
@@ -26,5 +27,10 @@ class Customer extends Model
     public function pickups(): HasMany
     {
         return $this->hasMany(TransLaundryPickup::class, 'id_customer');
+    }
+
+    public function voucherUsages()
+    {
+        return $this->hasMany(VoucherUsage::class, 'customer_id');
     }
 }

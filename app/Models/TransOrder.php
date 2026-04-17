@@ -16,12 +16,19 @@ class TransOrder extends Model
 
     protected $fillable = [
         'id_customer',
+        'customer_name',
+        'customer_phone',
+        'customer_address',
         'order_code',
         'order_date',
         'order_end_date',
         'order_status',
         'order_pay',
         'order_change',
+        'subtotal',
+        'tax',
+        'discount_member',
+        'discount_voucher',
         'total',
     ];
 
