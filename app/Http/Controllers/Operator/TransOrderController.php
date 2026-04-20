@@ -15,9 +15,22 @@ use Carbon\Carbon;
 
 class TransOrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = TransOrder::with('customer')->latest()->paginate(10);
+        $query = TransOrder::with('customer')->latest();
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('order_code', 'like', '%' . $search . '%')
+                  ->orWhere('customer_name', 'like', '%' . $search . '%')
+                  ->orWhereHas('customer', function($q) use ($search) {
+                      $q->where('customer_name', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        $orders = $query->paginate(10)->appends(['search' => $request->search]);
         return view('operator.orders.index', compact('orders'));
     }
 
