@@ -23,6 +23,7 @@ class TransOrder extends Model
         'order_date',
         'order_end_date',
         'order_status',
+        'payment_status',
         'order_pay',
         'order_change',
         'subtotal',
@@ -61,5 +62,15 @@ class TransOrder extends Model
     public function getStatusBadgeAttribute(): string
     {
         return $this->order_status == 0 ? 'warning' : 'success';
+    }
+
+    public function getPaymentLabelAttribute(): string
+    {
+        return $this->payment_status == 0 ? 'Belum Dibayar' : 'Sudah Dibayar';
+    }
+
+    public function getPaymentBadgeAttribute(): string
+    {
+        return $this->payment_status == 0 ? 'red' : 'green';
     }
 }

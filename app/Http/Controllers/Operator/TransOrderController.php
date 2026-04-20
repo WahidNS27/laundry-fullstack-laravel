@@ -32,11 +32,12 @@ class TransOrderController extends Controller
     public function store(Request $request)
     {
         $rules = [
+            'customer_type' => 'required|in:member,member_baru,non_member',
             'order_type' => 'required|array|min:1',
             'order_type.*' => 'exists:type_of_service,id',
             'qty' => 'required|array|min:1',
             'qty.*' => 'required|integer|min:1',
-            'order_pay' => 'required|integer|min:0',
+            'order_end_date' => 'required|date|after_or_equal:today',
         ];
 
         if ($request->customer_type == 'member') {
@@ -62,22 +63,38 @@ class TransOrderController extends Controller
 
             if ($request->customer_type == 'member') {
                 $customerId = $request->id_customer;
-            } else {
+                $customerName = null;
+                $customerPhone = null;
+                $customerAddress = null;
+            } elseif ($request->customer_type == 'member_baru') {
                 $newCustomer = Customer::create([
                     'customer_name' => $request->new_customer_name,
                     'phone' => $request->new_customer_phone,
                     'address' => $request->new_customer_address,
-                    'is_member' => false,
+                    'is_member' => true,
                 ]);
                 $customerId = $newCustomer->id;
+                $customerName = null;
+                $customerPhone = null;
+                $customerAddress = null;
+            } else {
+                $customerId = null;
+                $customerName = $request->new_customer_name;
+                $customerPhone = $request->new_customer_phone;
+                $customerAddress = $request->new_customer_address;
             }
 
             $order = TransOrder::create([
                 'id_customer' => $customerId,
+                'customer_name' => $customerName,
+                'customer_phone' => $customerPhone,
+                'customer_address' => $customerAddress,
                 'order_code' => $orderCode,
                 'order_date' => Carbon::now()->toDateString(),
+                'order_end_date' => $request->order_end_date,
                 'order_status' => 0,
-                'order_pay' => $request->order_pay,
+                'payment_status' => 0,
+                'order_pay' => 0,
                 'order_change' => 0,
                 'total' => 0,
             ]);
@@ -108,8 +125,8 @@ class TransOrderController extends Controller
 $tax = round($subTotal * 0.10);
 $grandTotal = $subTotal + $tax;
 
-// ambil payment
-$payment = (int) $request->order_pay;
+// Pembayaran akan dilakukan lewat aksi "Bayar" di tabel
+$payment = 0;
 
 
 // =========================
@@ -128,8 +145,7 @@ $baseTotal = $subTotal + $tax;
 // =========================
 // 🔥 DISKON CUSTOMER BARU
 // =========================
-// Backend memberikan diskon 5% hanya untuk customer baru (non_member)
-$memberDiscount = ($request->customer_type === 'non_member')
+$memberDiscount = ($request->customer_type === 'member_baru')
     ? ($baseTotal * 0.05)
     : 0;
 
@@ -178,13 +194,9 @@ $finalTotal = $baseTotal - $totalDiscountAmount;
 
 
 // =========================
-// 🔥 (7) VALIDASI PEMBAYARAN
+// 🔥 (7) VALIDASI PEMBAYARAN - DIHAPUS 
+// Pembayaran akan dilakukan secara terpisah
 // =========================
-if ($payment < $finalTotal) {
-    $kurang = $finalTotal - $payment;
-
-    throw new \Exception("Gagal dibayar! Pembayaran kurang Rp " . number_format($kurang, 0, ',', '.') . " dari tagihan pembayaran.");
-}
 
 
 // =========================
@@ -192,7 +204,7 @@ if ($payment < $finalTotal) {
 // =========================
 $order->update([
     'total' => $finalTotal,
-    'order_change' => $payment - $finalTotal,
+    'order_change' => 0,
     'subtotal' => $subTotal,
     'tax' => $tax,
     'discount_member' => $memberDiscount,
@@ -225,5 +237,26 @@ return redirect()
     {
         $order->load(['customer', 'details.service', 'pickup']);
         return view('operator.orders.show', compact('order'));
+    }
+
+    public function pay(Request $request, TransOrder $order)
+    {
+        $request->validate([
+            'order_pay' => 'required|integer|min:0',
+        ]);
+
+        $payment = (int) $request->order_pay;
+
+        if ($payment < $order->total) {
+            return back()->with('error', "Gagal dibayar! Pembayaran kurang Rp " . number_format($order->total - $payment, 0, ',', '.') . " dari tagihan.");
+        }
+
+        $order->update([
+            'order_pay' => $payment,
+            'order_change' => $payment - $order->total,
+            'payment_status' => 1,
+        ]);
+
+        return back()->with('success', 'Pembayaran berhasil diproses!');
     }
 }

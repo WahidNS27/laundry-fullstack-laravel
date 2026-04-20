@@ -45,7 +45,6 @@ class TransLaundryPickupController extends Controller
             // Update status pesanan & tanggal selesai
             $order->update([
                 'order_status' => 1, // Sudah Diambil
-                'order_end_date' => Carbon::now()->toDateString(),
             ]);
 
             DB::commit();

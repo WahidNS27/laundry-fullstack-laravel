@@ -34,12 +34,21 @@
             <div class="text-right">
                 <h3 class="text-xl font-bold text-gray-800">{{ $order->order_code }}</h3>
                 <p class="text-sm text-gray-600 mt-1">Tanggal: {{ $order->order_date->format('d M Y') }}</p>
-                <div class="mt-2 text-sm">
-                    Status:
-                    <span
-                        class="font-bold text-{{ $order->status_badge }}-600 px-2 border rounded border-{{ $order->status_badge }}-300 bg-{{ $order->status_badge }}-50 uppercase tracking-wide">
-                        {{ $order->status_label }}
-                    </span>
+                <div class="mt-2 text-sm space-y-2 text-right flex flex-col items-end">
+                    <div>
+                        <span class="mr-1 text-gray-500">Status:</span>
+                        <span
+                            class="font-bold text-{{ $order->status_badge }}-600 px-2 py-0.5 border rounded border-{{ $order->status_badge }}-300 bg-{{ $order->status_badge }}-50 uppercase tracking-wide">
+                            {{ $order->status_label }}
+                        </span>
+                    </div>
+                    <div>
+                        <span class="mr-1 text-gray-500">Pembayaran:</span>
+                        <span
+                            class="font-bold text-{{ $order->payment_badge }}-600 px-2 py-0.5 border rounded border-{{ $order->payment_badge }}-300 bg-{{ $order->payment_badge }}-50 uppercase tracking-wide">
+                            {{ $order->payment_label }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

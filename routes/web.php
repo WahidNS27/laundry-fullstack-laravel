@@ -40,6 +40,7 @@ Route::middleware(['auth', 'role:1,2'])->name('admin.')->prefix('admin')->group(
 // Operator Routes
 Route::middleware(['auth', 'role:1,2'])->name('operator.')->prefix('operator')->group(function () {
     Route::resource('orders', \App\Http\Controllers\Operator\TransOrderController::class)->except(['edit', 'update', 'destroy']);
+    Route::patch('/orders/{order}/pay', [\App\Http\Controllers\Operator\TransOrderController::class, 'pay'])->name('orders.pay');
     Route::get('/pickup/{order}', [\App\Http\Controllers\Operator\TransLaundryPickupController::class , 'create'])->name('pickup.create');
     Route::post('/pickup/{order}', [\App\Http\Controllers\Operator\TransLaundryPickupController::class , 'store'])->name('pickup.store');
 });
