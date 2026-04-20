@@ -1,13 +1,13 @@
 @extends('layouts.admin')
 
-@section('title', 'Kelola Operator')
-@section('header', 'Data Users (Operator)')
+@section('title', 'Manajemen User')
+@section('header', 'Manajemen User (Akses Sistem)')
 
 @section('content')
 <div class="mb-6 flex justify-between items-center">
-    <h3 class="text-gray-700 font-medium">Daftar Operator Laundry</h3>
+    <h3 class="text-gray-700 font-medium">Daftar Pengguna Sistem</h3>
     <a href="{{ route('admin.users.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm">
-        <i class="fas fa-plus mr-2"></i> Tambah Operator
+        <i class="fas fa-plus mr-2"></i> Tambah User Baru
     </a>
 </div>
 
@@ -49,7 +49,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">Belum ada data operator.</td>
+                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">Belum ada data user.</td>
                 </tr>
                 @endforelse
             </tbody>

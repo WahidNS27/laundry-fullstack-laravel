@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Operator')
-@section('header', 'Edit Operator')
+@section('title', 'Edit User')
+@section('header', 'Edit User')
 
 @section('content')
 <div class="mb-4">
@@ -17,7 +17,22 @@
             @method('PUT')
             
             <div class="mb-4">
-                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Operator</label>
+                <label for="id_level" class="block text-sm font-medium text-gray-700 mb-1">Hak Level (Role)</label>
+                <select name="id_level" id="id_level" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                    <option value="">-- Pilih Akses Level --</option>
+                    @foreach($levels as $level)
+                        <option value="{{ $level->id }}" {{ old('id_level', $user->id_level) == $level->id ? 'selected' : '' }}>
+                            {{ $level->level_name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('id_level')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+            
+            <div class="mb-4">
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Pengguna (User)</label>
                 <input type="text" name="name" id="name" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 @error('name') border-red-500 @enderror" value="{{ old('name', $user->name) }}" required maxlength="50">
                 @error('name')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -50,7 +65,7 @@
             
             <div class="flex justify-end pt-4 border-t border-gray-100">
                 <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-6 rounded-md shadow-sm transition-colors cursor-pointer">
-                    Perbarui Operator
+                    Perbarui Data User
                 </button>
             </div>
         </form>

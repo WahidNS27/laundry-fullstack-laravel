@@ -13,19 +13,17 @@ class UserController extends Controller
 {
     public function index()
     {
-        // Hanya menampilkan level Operator
-        $users = User::with('level')->whereHas('level', function($q) {
-            $q->where('level_name', 'Operator');
-        })->latest()->paginate(10);
+        // Menampilkan semua user dari setiap level
+        $users = User::with('level')->latest()->paginate(10);
         
         return view('admin.users.index', compact('users'));
     }
 
     public function create()
     {
-        // Ambil level Operator
-        $levelOperator = Level::where('level_name', 'Operator')->firstOrFail();
-        return view('admin.users.create', compact('levelOperator'));
+        // Ambil semua level untuk manajemen level
+        $levels = Level::orderBy('id', 'asc')->get();
+        return view('admin.users.create', compact('levels'));
     }
 
     public function store(Request $request)
@@ -44,17 +42,19 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('admin.users.index')->with('success', 'User (Operator) berhasil ditambahkan.');
+        return redirect()->route('admin.users.index')->with('success', 'Data User berhasil ditambahkan.');
     }
 
     public function edit(User $user)
     {
-        return view('admin.users.edit', compact('user'));
+        $levels = Level::orderBy('id', 'asc')->get();
+        return view('admin.users.edit', compact('user', 'levels'));
     }
 
     public function update(Request $request, User $user)
     {
         $rules = [
+            'id_level' => ['required', 'exists:level,id'],
             'name' => ['required', 'string', 'max:50'],
             'email' => ['required', 'string', 'email', 'max:50', 'unique:user,email,'.$user->id],
         ];
@@ -66,6 +66,7 @@ class UserController extends Controller
         $request->validate($rules);
 
         $data = [
+            'id_level' => $request->id_level,
             'name' => $request->name,
             'email' => $request->email,
         ];

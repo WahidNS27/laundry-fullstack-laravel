@@ -41,7 +41,7 @@
                     </a>
                     @if(Auth::user()->id_level == 1)
                         <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? 'bg-indigo-800 text-white' : 'text-indigo-100 hover:bg-indigo-700' }} group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                            <i class="fas fa-user-tie w-6 text-center mr-2"></i> Operator
+                            <i class="fas fa-users-cog w-6 text-center mr-2"></i> Manajemen User
                         </a>
                         <a href="{{ route('admin.services.index') }}" class="{{ request()->routeIs('admin.services.*') ? 'bg-indigo-800 text-white' : 'text-indigo-100 hover:bg-indigo-700' }} group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                             <i class="fas fa-box w-6 text-center mr-2"></i> Master Jasa

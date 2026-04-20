@@ -18,6 +18,9 @@ class DashboardController extends Controller
             'users' => User::count(),
             'services' => TypeOfService::count(),
             'orders' => TransOrder::count(),
+            'pendapatan' => TransOrder::where('payment_status', 1)->sum('total'),
+            'selesai' => TransOrder::where('order_status', 1)->count(),
+            'proses' => TransOrder::where('order_status', 0)->count(),
         ];
 
         return view('admin.dashboard', compact('stats'));
